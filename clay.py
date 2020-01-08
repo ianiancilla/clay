@@ -3,6 +3,8 @@ import pygame
 
 from settings import Settings
 from grid import Grid
+from character import Character, Player, Enemy
+
 
 class Game:
     """ a class to keep track of the entire game"""
@@ -19,21 +21,27 @@ class Game:
         else:
             self.screen = pygame.display.set_mode(
                 (self.settings.screen_width, self.settings.screen_height))
-
         pygame.display.set_caption(self.settings.game_title)
-        self.bg_color = (self.settings.bg_color)
+        self.bg_color = self.settings.bg_color
 
         # create and draw grid
         self.grid = Grid(self)
+
+        #create character group
+        self.characters = pygame.sprite.Group()
+        # TODO make initialise chars method?
+        self.characters.add(Player(self, self.grid.tiles_dict["player_tile"][0]))
 
     def run_game(self):
         """
         Runs the main loop for the game
         """
         while True:
+            # checks user input
             self._check_events()
-
-            #refresh screen
+            # TODO handle inputs and update game
+            # refresh screen
+            self._update_screen()
             pygame.display.flip()
 
     def _check_events(self):
@@ -41,6 +49,14 @@ class Game:
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
+                elif event.type == pygame.KEYDOWN:  # key events
+                    if event.key == self.settings.key_quit:    # quit game TODO remove or change quit key
+                        sys.exit()
+
+    def _update_screen(self):
+        """ updates the screens with all changes before it can be refreshed"""
+        self.characters.draw(self.screen)
+
 
 if __name__ == '__main__':
     game = Game()
