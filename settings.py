@@ -27,21 +27,20 @@ class Settings:
         self.wp_axe = "images/weapon_axe.png"
         self.wp_lance = "images/weapon_lance.png"
 
-        # WEAPON SETTINGS
+        # WEAPON settings
         self.wp_list = ["lance", "axe", "sword"]
         self.wp_cycle = cycle(self.wp_list)
 
-        # TODO player settings
+        ### GAMEPLAY SETTINGS ###
         # PLAYER settings
         self.player_start_HP = 50
-
-        # TODO enemy settings
         # ENEMY settings
         self.enemy_start_HP = 20
+        self.enemy_spawn_prob = 0.5    #probability of an enemy spawning on outermost tile, each turn
 
         # TODO score settings
 
-        # key mapping
+        # KEY MAPPING
         self.key_quit = pygame.K_q
         self.key_keep_wp = pygame.K_a
         self.key_change_wp = pygame.K_d

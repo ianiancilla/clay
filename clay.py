@@ -1,4 +1,6 @@
 import sys
+from random import random
+
 import pygame
 
 from settings import Settings
@@ -30,8 +32,7 @@ class Game:
         # TODO make initialise chars method?
         # create player
         self.player = Player(self, self.grid.tiles_dict["player_tile"][0])
-        # TODO create enemies
-        self.enemies = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()    # TODO decide if this group is needed
         # create character group
         self.characters = pygame.sprite.Group()
         self.characters.add(self.player)
@@ -40,11 +41,11 @@ class Game:
         """
         Runs the main loop for the game
         """
+        self._update_screen()
         while True:
             # checks user input and handles it
             self._check_events()
             # refresh screen
-            self._update_screen()
             pygame.display.flip()
 
     def _check_events(self):
@@ -57,14 +58,27 @@ class Game:
                         sys.exit()
                 elif event.type == pygame.KEYUP:    # key up events
                     if event.key == self.settings.key_keep_wp:    # if player kept weapon
-                        pass
+                        self._update_screen()
                     elif event.key == self.settings.key_change_wp:  # if player changed weapon
                         self.player.change_weapon()
+                        self._update_screen()
 
     def _update_screen(self):
-        """ updates the screens with all changes before it can be refreshed"""
+        """ updates the screens with all turn changes before it can be refreshed"""
+        self.spawn_enemies()
+        self.grid.blit_tiles()
         self.characters.update()
         self.characters.draw(self.screen)
+
+    def spawn_enemies(self):
+        """ has chance to spawn enemies on outermost tiles, if they are free """
+        outer_tiles = [self.grid.tiles_dict["left_tiles"][-1], self.grid.tiles_dict["right_tiles"][-1]]
+        for tile in outer_tiles:
+            if tile.free:
+                if random() < self.settings.enemy_spawn_prob:
+                    new_enemy = Enemy(self, tile)
+                    self.enemies.add(new_enemy)    # TODO decide if this group is needed
+                    self.characters.add(new_enemy)
 
 
 if __name__ == '__main__':
