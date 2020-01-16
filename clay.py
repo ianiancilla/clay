@@ -27,19 +27,22 @@ class Game:
         # create and draw grid
         self.grid = Grid(self)
 
-        #create character group
-        self.characters = pygame.sprite.Group()
         # TODO make initialise chars method?
-        self.characters.add(Player(self, self.grid.tiles_dict["player_tile"][0]))
+        # create player
+        self.player = Player(self, self.grid.tiles_dict["player_tile"][0])
+        # TODO create enemies
+        self.enemies = pygame.sprite.Group()
+        # create character group
+        self.characters = pygame.sprite.Group()
+        self.characters.add(self.player)
 
     def run_game(self):
         """
         Runs the main loop for the game
         """
         while True:
-            # checks user input
+            # checks user input and handles it
             self._check_events()
-            # TODO handle inputs and update game
             # refresh screen
             self._update_screen()
             pygame.display.flip()
@@ -49,12 +52,18 @@ class Game:
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
-                elif event.type == pygame.KEYDOWN:  # key events
+                elif event.type == pygame.KEYDOWN:  # key down events
                     if event.key == self.settings.key_quit:    # quit game TODO remove or change quit key
                         sys.exit()
+                elif event.type == pygame.KEYUP:    # key up events
+                    if event.key == self.settings.key_keep_wp:    # if player kept weapon
+                        pass
+                    elif event.key == self.settings.key_change_wp:  # if player changed weapon
+                        self.player.change_weapon()
 
     def _update_screen(self):
         """ updates the screens with all changes before it can be refreshed"""
+        self.characters.update()
         self.characters.draw(self.screen)
 
 

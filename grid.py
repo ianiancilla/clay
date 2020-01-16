@@ -57,6 +57,7 @@ class Tile:
         self.grid = grid
         self.settings = grid.settings
         self.screen = grid.screen
+        self.free = True
         # draw the tile
         self._position_tile(bg_img, x_left)
 
@@ -67,3 +68,9 @@ class Tile:
         self.rect.top = self.grid.rect.top
         self.rect.left = x_left
 
+    def toggle_free(self):
+        """ toggles the free status from True to False and vice versa """
+        if self.free:
+            self.free = False
+        else:
+            self.free = True

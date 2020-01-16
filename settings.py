@@ -1,3 +1,5 @@
+from itertools import cycle
+
 import pygame
 
 
@@ -25,6 +27,10 @@ class Settings:
         self.wp_axe = "images/weapon_axe.png"
         self.wp_lance = "images/weapon_lance.png"
 
+        # WEAPON SETTINGS
+        self.wp_list = ["lance", "axe", "sword"]
+        self.wp_cycle = cycle(self.wp_list)
+
         # TODO player settings
         # PLAYER settings
         self.player_start_HP = 50
@@ -37,3 +43,5 @@ class Settings:
 
         # key mapping
         self.key_quit = pygame.K_q
+        self.key_keep_wp = pygame.K_a
+        self.key_change_wp = pygame.K_d
