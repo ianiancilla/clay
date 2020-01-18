@@ -24,7 +24,7 @@ class Character(Sprite):
         self.weapon = weapon
         self._update_wp_img()
         self.rect = self.image.get_rect()
-        self.place(self.tile)
+        self.place()
 
         self.hp = hp
 
@@ -37,9 +37,9 @@ class Character(Sprite):
         elif self.weapon == "lance":
             self.image = pygame.image.load(self.settings.wp_lance)
 
-    def place(self, tile):
+    def place(self):
         """ places character sprite centered on given tile """
-        self.rect.center = tile.rect.center
+        self.rect.center = self.tile.rect.center
 
     def apply_damage(self):    # TODO apply_damage
         """ applies damage to character """
@@ -68,7 +68,7 @@ class Enemy(Character):
     _nextID = 0
 
     def __init__(self, game, tile):
-        """ initalises an enemy """
+        """ initialises an enemy """
         self.settings = game.settings
         super().__init__(game, random.choice(self.settings.wp_list), tile, self.settings.enemy_start_HP)
 
@@ -85,8 +85,9 @@ class Enemy(Character):
 
     def _move(self):
         """ checks if next tile towards player is free, and moves there if so """
-        if self.tile.next().free:
+        if self.tile.next() and self.tile.next().free:
             self.tile.toggle_free()
             self.tile = self.tile.next()
-            self.place(self.tile)
+            self.place()
             self.tile.toggle_free()
+

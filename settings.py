@@ -14,7 +14,7 @@ class Settings:
         self.full_screen = False
         self.screen_width = 1024
         self.screen_height = 768
-        self.bg_color = (0, 0, 0)
+        self.bg_color = pygame.Color("blue") #(0, 0, 0)
 
         # GRID settings
         self.tiles_per_side = 5

@@ -81,11 +81,13 @@ class Tile:
             self.free = True
 
     def next(self):
-        """ returns the next tile, where next is closer to the player """
+        """ returns the next tile, where next is closer to the player.
+         Returns None if next tile is Player tile"""
         if self.side == "left":
             tiles = self.grid.tiles_dict["left_tiles"]
         elif self.side == "right":
             tiles = self.grid.tiles_dict["right_tiles"]
 
         ind = tiles.index(self)
-        return tiles[ind-1]
+        if ind > 0:
+            return tiles[ind-1]

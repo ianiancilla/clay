@@ -24,7 +24,6 @@ class Game:
             self.screen = pygame.display.set_mode(
                 (self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption(self.settings.game_title)
-        self.bg_color = self.settings.bg_color
 
         # create and draw grid
         self.grid = Grid(self)
@@ -46,6 +45,7 @@ class Game:
             # checks user input and handles it
             self._check_events()
             # refresh screen
+            self._draw_screen()
             pygame.display.flip()
 
     def _check_events(self):
@@ -63,12 +63,16 @@ class Game:
                         self.player.change_weapon()
                         self._update_screen()
 
+    def _draw_screen(self):
+        """ draws the current game situation to the screen """
+        self.screen.fill(self.settings.bg_color)
+        self.grid.blit_tiles()
+        self.characters.draw(self.screen)
+
     def _update_screen(self):
         """ updates the screens with all turn changes before it can be refreshed"""
-        self.spawn_enemies()
-        self.grid.blit_tiles()
         self.characters.update()
-        self.characters.draw(self.screen)
+        self.spawn_enemies()
 
     def spawn_enemies(self):
         """ has chance to spawn enemies on outermost tiles, if they are free """
