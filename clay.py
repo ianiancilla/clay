@@ -32,10 +32,12 @@ class Game:
         # TODO make initialise chars method?
         # create player
         self.player = Player(self, self.grid.tiles_dict["player_tile"][0])
-        self.enemies = pygame.sprite.Group()    # TODO decide if this group is needed
-        # create character group
+        # create character groups
         self.characters = pygame.sprite.Group()
         self.characters.add(self.player)
+
+        self.enemies = pygame.sprite.Group()
+
 
     def run_game(self):
         """
@@ -75,7 +77,8 @@ class Game:
 
     def _update_screen(self):
         """ updates the screens with all turn changes before it can be refreshed"""
-        # TODO applies damage if necessary
+        # applies damage if necessary
+        self.fight()
 
         # TODO kills characters with 0 HP
 
@@ -89,11 +92,21 @@ class Game:
         """ has chance to spawn enemies on outermost tiles, if they are free """
         outer_tiles = [self.grid.tiles_dict["left_tiles"][-1], self.grid.tiles_dict["right_tiles"][-1]]
         for tile in outer_tiles:
-            if tile.free:
+            if not tile.get_character():
                 if random() < self.settings.enemy_spawn_prob:
                     new_enemy = Enemy(self, tile)
-                    self.enemies.add(new_enemy)    # TODO decide if this group is needed
+                    self.enemies.add(new_enemy)
                     self.characters.add(new_enemy)
+
+    def fight(self):
+        # find enemies adjacent to player
+        adj_enemies = [self.grid.tiles_dict["left_tiles"][0].get_character(),
+                       self.grid.tiles_dict["right_tiles"][0].get_character()]
+        # applies the damage
+        for en in adj_enemies:
+            if en:
+                en.apply_damage(self.player)
+                self.player.apply_damage(en)
 
 
 if __name__ == '__main__':

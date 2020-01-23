@@ -34,10 +34,10 @@ class Settings:
 
         ### GAMEPLAY SETTINGS ###
         # PLAYER settings
-        self.player_start_HP = 50
+        self.player_start_HP = 100
         # ENEMY settings
-        self.enemy_start_HP = 20
-        self.enemy_spawn_prob = 0.5    #probability of an enemy spawning on outermost tile, each turn
+        self.enemy_start_HP = 10
+        self.enemy_spawn_prob = 0.3    #probability of an enemy spawning on outermost tile, each turn
 
         # WEAPON settings
         self.wp_list = ["lance", "axe", "sword"]

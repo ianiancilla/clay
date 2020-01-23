@@ -62,9 +62,15 @@ class Tile:
         self.settings = grid.settings
         self.screen = grid.screen
         self.side = side
-        self.free = True
+        self.character = None
         # draw the tile
         self._position_tile(bg_img, x_left)
+
+    def get_character(self):
+        return self.character
+
+    def set_character(self, character):
+        self.character = character
 
     def _position_tile(self, bg_img, x_left):
         """ set tile dimensions and position """
@@ -73,12 +79,13 @@ class Tile:
         self.rect.top = self.grid.rect.top
         self.rect.left = x_left
 
-    def toggle_free(self):
-        """ toggles the free status from True to False and vice versa """
-        if self.free:
-            self.free = False
-        else:
-            self.free = True
+    # TODO remove
+    # def toggle_free(self):
+    #     """ toggles the free status from True to False and vice versa """
+    #     if self.free:
+    #         self.free = False
+    #     else:
+    #         self.free = True
 
     def next(self):
         """ returns the next tile, where next is closer to the player.

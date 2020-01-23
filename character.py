@@ -21,7 +21,7 @@ class Character(Sprite):
         self.screen = game.screen
         self.settings = game.settings
         self.tile = tile
-        self.tile.toggle_free()
+        self.tile.set_character(self)
 
         # set weapon, image, and position
         self.weapon = weapon
@@ -59,7 +59,7 @@ class Character(Sprite):
         # set damage multiplier
         if self.get_wp() == opponent.get_wp():
             mult = self.settings.dam_mult_even
-        elif self.settings.wp_list.index(self.get_wp()) == self.settings.wp_list.index(opponent.get_wp()) - 1:
+        elif self.settings.wp_list.index(self.get_wp()) == self.settings.wp_list.index(opponent.get_wp()) + 1:
             mult = self.settings.dam_mult_win
         else:
             mult = self.settings.dam_mult_lose
@@ -117,9 +117,9 @@ class Enemy(Character):
 
     def _move(self):
         """ checks if next tile towards player is free, and moves there if so """
-        if self.tile.next() and self.tile.next().free:
-            self.tile.toggle_free()
+        if self.tile.next() and not self.tile.next().get_character():
+            self.tile.set_character(None)
             self.tile = self.tile.next()
             self.place()
-            self.tile.toggle_free()
+            self.tile.set_character(self)
 
