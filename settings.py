@@ -27,9 +27,10 @@ class Settings:
         self.wp_axe = "images/weapon_axe.png"
         self.wp_lance = "images/weapon_lance.png"
 
-        # WEAPON settings
-        self.wp_list = ["lance", "axe", "sword"]
-        self.wp_cycle = cycle(self.wp_list)
+        # FONT settings
+        self.hp_font = pygame.font.SysFont(None, 50)
+        self.hp_color = pygame.Color("green")
+        self.hp_dist = 20    # distance in px between HP counter and character
 
         ### GAMEPLAY SETTINGS ###
         # PLAYER settings
@@ -37,6 +38,15 @@ class Settings:
         # ENEMY settings
         self.enemy_start_HP = 20
         self.enemy_spawn_prob = 0.5    #probability of an enemy spawning on outermost tile, each turn
+
+        # WEAPON settings
+        self.wp_list = ["lance", "axe", "sword"]
+        self.wp_cycle = cycle(self.wp_list)
+
+        # DAMAGE settings
+        self.dam_mult_even = 1    # multiplier for same weapon
+        self.dam_mult_win = 2    # multiplier for weapon advantage
+        self.dam_mult_lose = 0    # multiplier for weapon disadvantage
 
         # TODO score settings
 

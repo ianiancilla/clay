@@ -4,6 +4,8 @@ import random
 import pygame
 from pygame.sprite import Sprite
 
+from hp import HP
+
 
 class Character(Sprite):
     """ a super class for player and enemies"""
@@ -13,8 +15,9 @@ class Character(Sprite):
             tile - the Tile it occupies
             weapon, image, rect, hp
         """
-        self.settings = game.settings
         super().__init__()
+        self.settings = game.settings
+        self.game = game
         self.screen = game.screen
         self.settings = game.settings
         self.tile = tile
@@ -27,6 +30,16 @@ class Character(Sprite):
         self.place()
 
         self.hp = hp
+        self.hp_counter = HP(self)
+
+    def set_hp(self, hp):
+        self.hp = hp
+
+    def get_hp(self):
+        return self.hp
+
+    def get_wp(self):
+        return self.weapon
 
     def _update_wp_img(self):
         """ sets self.wp_img to the correct image based on self.weapon """
@@ -41,9 +54,22 @@ class Character(Sprite):
         """ places character sprite centered on given tile """
         self.rect.center = self.tile.rect.center
 
-    def apply_damage(self):    # TODO apply_damage
+    def apply_damage(self, opponent):    # TODO apply_damage
         """ applies damage to character """
-        pass
+        # set damage multiplier
+        if self.get_wp() == opponent.get_wp():
+            mult = self.settings.dam_mult_even
+        elif self.settings.wp_list.index(self.get_wp()) == self.settings.wp_list.index(opponent.get_wp()) - 1:
+            mult = self.settings.dam_mult_win
+        else:
+            mult = self.settings.dam_mult_lose
+
+        # set new HP
+        damage = self.get_hp() * mult
+        if damage > opponent.get_hp():
+            opponent.set_hp(0)
+        else:
+            opponent.set_hp(opponent.get_hp() - damage)
 
 
 class Player(Character):
@@ -59,8 +85,14 @@ class Player(Character):
         """ cycles player weapon (not image!) to the next one in self.settings.wp_cycle """
         self.weapon = next(self.settings.wp_cycle)
 
+    def _make_hp_rect(self):
+        pass
+        # TODO make hp rect
+
+
     def kill(self):    # TODO player kill
         pass
+
 
 class Enemy(Character):
     """ a class for enemies """

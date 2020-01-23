@@ -13,6 +13,7 @@ class Game:
     def __init__(self):
         """ Initialise game """
         pygame.display.init()
+        pygame.font.init()
         self.settings = Settings()
 
         # draw window
@@ -68,10 +69,20 @@ class Game:
         self.screen.fill(self.settings.bg_color)
         self.grid.blit_tiles()
         self.characters.draw(self.screen)
+        # TODO move this to a sensible place
+        for char in self.characters:
+            char.hp_counter.update_hp()
 
     def _update_screen(self):
         """ updates the screens with all turn changes before it can be refreshed"""
+        # TODO applies damage if necessary
+
+        # TODO kills characters with 0 HP
+
+        # updates existing characters
         self.characters.update()
+
+        # spawns new enemies if possible
         self.spawn_enemies()
 
     def spawn_enemies(self):
