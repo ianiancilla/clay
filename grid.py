@@ -79,14 +79,6 @@ class Tile:
         self.rect.top = self.grid.rect.top
         self.rect.left = x_left
 
-    # TODO remove
-    # def toggle_free(self):
-    #     """ toggles the free status from True to False and vice versa """
-    #     if self.free:
-    #         self.free = False
-    #     else:
-    #         self.free = True
-
     def next(self):
         """ returns the next tile, where next is closer to the player.
          Returns None if next tile is Player tile"""

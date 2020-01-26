@@ -54,12 +54,13 @@ class Character(Sprite):
         """ places character sprite centered on given tile """
         self.rect.center = self.tile.rect.center
 
-    def apply_damage(self, opponent):    # TODO apply_damage
+    def apply_damage(self, opponent):
         """ applies damage to character """
         # set damage multiplier
         if self.get_wp() == opponent.get_wp():
             mult = self.settings.dam_mult_even
-        elif self.settings.wp_list.index(self.get_wp()) == self.settings.wp_list.index(opponent.get_wp()) + 1:
+        elif self.settings.wp_list[self.settings.wp_list.index(opponent.get_wp())] == \
+            self.settings.wp_list[self.settings.wp_list.index(self.get_wp()) - 1] :
             mult = self.settings.dam_mult_win
         else:
             mult = self.settings.dam_mult_lose
@@ -80,15 +81,11 @@ class Player(Character):
 
     def update(self):
         self._update_wp_img()
+        self.hp_counter.update_hp()
 
     def change_weapon(self):
         """ cycles player weapon (not image!) to the next one in self.settings.wp_cycle """
         self.weapon = next(self.settings.wp_cycle)
-
-    def _make_hp_rect(self):
-        pass
-        # TODO make hp rect
-
 
     def kill(self):    # TODO player kill
         pass
@@ -111,9 +108,13 @@ class Enemy(Character):
     def update(self):
         """ updates enemies with actions required each turn """
         self._move()
+        self.hp_counter.update_hp()
 
     def kill(self):    # TODO enemy kill
-        pass
+        self.game.characters_group.remove(self)
+        self.game.enemies_group.remove(self)
+        self.game.hp_counters_group.remove(self.hp_counter)
+        self.tile.character = None
 
     def _move(self):
         """ checks if next tile towards player is free, and moves there if so """

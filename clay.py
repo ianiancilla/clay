@@ -15,8 +15,9 @@ class Game:
         pygame.display.init()
         pygame.font.init()
         self.settings = Settings()
+        self.running = True
 
-        # draw window
+        # create window
         if self.settings.full_screen:
             self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
             self.settings.screen_width = self.screen.get_rect().width
@@ -29,36 +30,36 @@ class Game:
         # create and draw grid
         self.grid = Grid(self)
 
-        # TODO make initialise chars method?
+        # create sprite groups
+        self.characters_group = pygame.sprite.Group()    # used for all characters (player and enemies)
+        self.hp_counters_group = pygame.sprite.Group()    # used for all HP counter (player and enemies)
+        self.enemies_group = pygame.sprite.Group()    # used for enemy characters only
+
         # create player
         self.player = Player(self, self.grid.tiles_dict["player_tile"][0])
-        # create character groups
-        self.characters = pygame.sprite.Group()
-        self.characters.add(self.player)
-
-        self.enemies = pygame.sprite.Group()
-
+        self.characters_group.add(self.player)
 
     def run_game(self):
         """
         Runs the main loop for the game
         """
         self._update_screen()
-        while True:
+        while self.running:
             # checks user input and handles it
             self._check_events()
-            # refresh screen
+            # draws new screen
             self._draw_screen()
             pygame.display.flip()
+        pygame.quit()
 
     def _check_events(self):
         """Checks for and responds to mouse and kb events"""
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    sys.exit()
+                    self.running = False
                 elif event.type == pygame.KEYDOWN:  # key down events
-                    if event.key == self.settings.key_quit:    # quit game TODO remove or change quit key
-                        sys.exit()
+                    if event.key == self.settings.key_quit:    # quit game TODO remove or change quit ke
+                        self.running = False
                 elif event.type == pygame.KEYUP:    # key up events
                     if event.key == self.settings.key_keep_wp:    # if player kept weapon
                         self._update_screen()
@@ -70,10 +71,8 @@ class Game:
         """ draws the current game situation to the screen """
         self.screen.fill(self.settings.bg_color)
         self.grid.blit_tiles()
-        self.characters.draw(self.screen)
-        # TODO move this to a sensible place
-        for char in self.characters:
-            char.hp_counter.update_hp()
+        self.characters_group.draw(self.screen)
+        self.hp_counters_group.draw(self.screen)
 
     def _update_screen(self):
         """ updates the screens with all turn changes before it can be refreshed"""
@@ -83,7 +82,7 @@ class Game:
         # TODO kills characters with 0 HP
 
         # updates existing characters
-        self.characters.update()
+        self.characters_group.update()
 
         # spawns new enemies if possible
         self.spawn_enemies()
@@ -95,8 +94,8 @@ class Game:
             if not tile.get_character():
                 if random() < self.settings.enemy_spawn_prob:
                     new_enemy = Enemy(self, tile)
-                    self.enemies.add(new_enemy)
-                    self.characters.add(new_enemy)
+                    self.enemies_group.add(new_enemy)
+                    self.characters_group.add(new_enemy)
 
     def fight(self):
         # find enemies adjacent to player
@@ -107,6 +106,8 @@ class Game:
             if en:
                 en.apply_damage(self.player)
                 self.player.apply_damage(en)
+                if en.get_hp() <= 0:
+                    en.kill()
 
 
 if __name__ == '__main__':
