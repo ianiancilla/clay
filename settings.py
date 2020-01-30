@@ -60,6 +60,6 @@ class Settings:
         # TODO score settings
 
         # KEY MAPPING
-        self.key_quit = pygame.K_q
+        self.key_quit = pygame.K_ESCAPE
         self.key_keep_wp = pygame.K_a
         self.key_change_wp = pygame.K_d
