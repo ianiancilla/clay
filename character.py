@@ -90,6 +90,10 @@ class Player(Character):
     def kill(self):    # TODO player kill
         pass
 
+    def get_adj_enemies(self):
+        return [self.game.grid.tiles_dict["left_tiles"][0].get_character(),
+                self.game.grid.tiles_dict["right_tiles"][0].get_character()]
+
 
 class Enemy(Character):
     """ a class for enemies """
@@ -107,8 +111,11 @@ class Enemy(Character):
 
     def update(self):
         """ updates enemies with actions required each turn """
-        self._move()
-        self.hp_counter.update_hp()
+        if self.get_hp() <= 0:
+            self.kill()
+        else:
+            self._move()
+            self.hp_counter.update_hp()
 
     def kill(self):    # TODO enemy kill
         self.game.characters_group.remove(self)

@@ -27,10 +27,19 @@ class Settings:
         self.wp_axe = "images/weapon_axe.png"
         self.wp_lance = "images/weapon_lance.png"
 
+        # SOUND settings
+        self.sfx_fight = pygame.mixer.Sound("sounds/fight.wav")
+        self.sfx_ch_wp = pygame.mixer.Sound("sounds/ch_wp.wav")
+        self.sfx_kp_wp = pygame.mixer.Sound("sounds/kp_wp.wav")
+
+
         # FONT settings
         self.hp_font = pygame.font.SysFont(None, 50)
         self.hp_color = pygame.Color("green")
         self.hp_dist = 20    # distance in px between HP counter and character
+
+        # TIME settings
+        self.time_sleep = 0.5    # time between game events
 
         ### GAMEPLAY SETTINGS ###
         # PLAYER settings

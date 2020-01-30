@@ -1,5 +1,6 @@
 import sys
 from random import random
+from time import sleep
 
 import pygame
 
@@ -14,6 +15,7 @@ class Game:
         """ Initialise game """
         pygame.display.init()
         pygame.font.init()
+        pygame.mixer.init()
         self.settings = Settings()
         self.running = True
 
@@ -39,6 +41,7 @@ class Game:
         self.player = Player(self, self.grid.tiles_dict["player_tile"][0])
         self.characters_group.add(self.player)
 
+    # GAME LOOP
     def run_game(self):
         """
         Runs the main loop for the game
@@ -52,42 +55,69 @@ class Game:
             pygame.display.flip()
         pygame.quit()
 
+    # EVENT HANDLING
     def _check_events(self):
         """Checks for and responds to mouse and kb events"""
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.running = False
+                    self.quit_game()
                 elif event.type == pygame.KEYDOWN:  # key down events
-                    if event.key == self.settings.key_quit:    # quit game TODO remove or change quit ke
-                        self.running = False
+                    if event.key == self.settings.key_quit:    # quit game TODO remove or change quit key
+                        self.quit_game()
                 elif event.type == pygame.KEYUP:    # key up events
                     if event.key == self.settings.key_keep_wp:    # if player kept weapon
-                        self._update_screen()
+                        self.keep_wp()
                     elif event.key == self.settings.key_change_wp:  # if player changed weapon
-                        self.player.change_weapon()
-                        self._update_screen()
+                        self.change_wp()
 
-    def _draw_screen(self):
-        """ draws the current game situation to the screen """
-        self.screen.fill(self.settings.bg_color)
-        self.grid.blit_tiles()
-        self.characters_group.draw(self.screen)
-        self.hp_counters_group.draw(self.screen)
+    def quit_game(self):
+        """ quits the game by ending the game loop """
+        self.running = False
+
+    def keep_wp(self):
+        """ player keeps current weapon, and fights with adjacent enemies """
+        self.settings.sfx_kp_wp.play()    # keep_weapon sound
+        sleep(self.settings.sfx_kp_wp.get_length())    # small wait
+
+        if self.player.get_adj_enemies() != [None, None]:
+            # everyone deals damage
+            for en in self.player.get_adj_enemies():
+                if en:
+                    en.apply_damage(self.player)
+                    self.player.apply_damage(en)
+
+            self.settings.sfx_fight.play()    # fighting sound
+            sleep(self.settings.sfx_fight.get_length())
+
+        self._update_screen()
+
+    def change_wp(self):
+        """ player swaps to next weapon, receives damage according to new weapon but deals none """
+        self.player.change_weapon()
+        self.player.update()
+        self.settings.sfx_ch_wp.play()    # change_weapon sound
+        sleep(self.settings.sfx_ch_wp.get_length())    # small wait
+
+        if self.player.get_adj_enemies() != [None, None]:
+            # enemies deal damage (player does not)
+            for en in self.player.get_adj_enemies():
+                if en:
+                    en.apply_damage(self.player)
+            self.settings.sfx_fight.play()    # fighting sound
+            sleep(self.settings.sfx_fight.get_length())
+
+        self._update_screen()
+
+    # TURN CHANGE ACTIONS
 
     def _update_screen(self):
         """ updates the screens with all turn changes before it can be refreshed"""
-        # applies damage if necessary
-        self.fight()
-
-        # TODO kills characters with 0 HP
-
         # updates existing characters
         self.characters_group.update()
-
         # spawns new enemies if possible
-        self.spawn_enemies()
+        self._spawn_enemies()
 
-    def spawn_enemies(self):
+    def _spawn_enemies(self):
         """ has chance to spawn enemies on outermost tiles, if they are free """
         outer_tiles = [self.grid.tiles_dict["left_tiles"][-1], self.grid.tiles_dict["right_tiles"][-1]]
         for tile in outer_tiles:
@@ -97,17 +127,14 @@ class Game:
                     self.enemies_group.add(new_enemy)
                     self.characters_group.add(new_enemy)
 
-    def fight(self):
-        # find enemies adjacent to player
-        adj_enemies = [self.grid.tiles_dict["left_tiles"][0].get_character(),
-                       self.grid.tiles_dict["right_tiles"][0].get_character()]
-        # applies the damage
-        for en in adj_enemies:
-            if en:
-                en.apply_damage(self.player)
-                self.player.apply_damage(en)
-                if en.get_hp() <= 0:
-                    en.kill()
+    # DRAWING
+
+    def _draw_screen(self):
+        """ draws the current game situation to the screen """
+        self.screen.fill(self.settings.bg_color)
+        self.grid.blit_tiles()
+        self.characters_group.draw(self.screen)
+        self.hp_counters_group.draw(self.screen)
 
 
 if __name__ == '__main__':
